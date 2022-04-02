@@ -4,19 +4,256 @@ pub enum Error {
     GameComplete,
 }
 
-pub struct BowlingGame {}
+pub enum State{
+    Strike,
+    Spare,
+    Open,
+}
+
+pub struct Frame{
+    first : u16,
+    second : Option<u16>,
+    third : Option<u16>,
+    state : State,
+    ten : bool,
+}
+
+impl Frame{
+    pub fn new(is_ten : bool) -> Self{
+        Frame{
+            first : 0,
+            second : None,
+            third : None,
+            state : State::Open,
+            ten : is_ten,
+        }
+    }
+
+    pub fn is_finish(&mut self) -> bool {
+        //열번쨰 프레임인 경우
+        if self.ten {
+            println!("열번쨰 프레임 입니다");
+            //두번째 안친경우
+            if self.second.is_none() {
+                false
+            }
+            //첫번째 두번째 10개 다치고 3번째 안친경우
+            else if self.second.unwrap() + self.first >= 10 && self.third.is_none() {
+                false
+            }
+            else {
+                true
+            }
+        }
+        //열번째 이외의 프레임
+        else {
+            //스트라이크 친경우
+            if self.first == 10 && self.second.is_none() {
+                true
+            }
+            //두번째거 안친경우
+            else if self.second.is_none(){
+                false
+            }
+            else {
+                true
+            }
+        }
+    }
+}
+
+pub struct BowlingGame {
+    now_frame : usize,
+    frame_list : Vec<Frame>,
+}
 
 impl BowlingGame {
     pub fn new() -> Self {
-        unimplemented!();
+        BowlingGame {
+            now_frame : 1,
+            frame_list : Vec::new()
+        }
     }
 
     pub fn roll(&mut self, pins: u16) -> Result<(), Error> {
-        unimplemented!("Record that {} pins have been scored", pins);
+        println!("{}", pins);
+        //let mut current_frame = &self.frame_list[self.now_frame - 1];
+        //10 프레임 에러 검출
+        if self.now_frame == 10 && self.frame_list[self.now_frame - 1].is_finish(){
+            println!("10프레임 다침");
+            return Err(Error::GameComplete)
+        }
+        // 비정상적인 입력 검출
+        // 10개 넘는 핀 쳤을 경우
+        if pins > 10{
+            println!("핀 다침");
+            return Err(Error::NotEnoughPinsLeft);
+        }
+        let mut left_pins : u16 = 10;
+        // 1번째 프레임이 아닌 경우
+        if self.frame_list.len() != 0{
+            println!("치고 있음");
+            //10번째 프레임 첫번째가 아닌 경우
+            if  self.frame_list.len() == 10{
+                //첫번째 친거 빼기
+                left_pins -= &self.frame_list[self.now_frame - 1].first;
+
+                //만약 더 없으면 핀 보충
+                if left_pins == 0 {
+                    print!("핀 보충 ");
+                    left_pins = 10;
+                }
+
+                // 두번째 친거 있다면 빼기
+                if self.frame_list[self.now_frame - 1].second.is_some() {
+                    left_pins -= &self.frame_list[self.now_frame - 1].second.unwrap();
+                }
+
+                //만약 더 없으면 핀 보충
+                if left_pins == 0 {
+                    print!("핀 보충 ");
+                    left_pins = 10;
+                }
+                
+
+                if left_pins < pins && left_pins != 10{
+                    return Err(Error::NotEnoughPinsLeft)
+                }
+            }
+            // 이외
+            else {
+                println!("이외");
+                if  &self.frame_list[self.now_frame - 1].first + pins > 10 && !self.frame_list[self.now_frame - 1].is_finish() {
+                    return Err(Error::NotEnoughPinsLeft)
+                }
+            }
+        }
+        //오류 검출 이후
+
+        // 첫 프레임
+        if self.frame_list.len() == 0{
+            println!("첫 프레임 {}",pins);
+            let mut frame = Frame::new(false);
+            if pins == 10{
+                frame.state = State::Strike;
+            }
+            frame.first = pins;
+            self.frame_list.push(frame);
+            return Ok(())
+        }
+        // 10프레임 시작
+        else if self.frame_list.len() == 9 && self.frame_list[self.now_frame - 1].is_finish() {
+            self.now_frame = self.now_frame + 1;
+            println!("{}번째 프레임 첫번째 {}",self.now_frame,pins);
+            
+            let mut frame = Frame::new(true);
+            if pins == 10{
+                frame.state = State::Strike;
+            }
+            frame.first = pins;
+            self.frame_list.push(frame);
+            return Ok(())            
+        }
+        // 10프레임 도중
+        else if self.frame_list.len() == 10 && !self.frame_list[self.now_frame - 1].is_finish(){
+            //10프레임 세번째
+            if self.frame_list[self.now_frame - 1].second.is_some() {
+                println!("{} 프레임 세번째 {}",self.now_frame, pins);
+                self.frame_list[self.now_frame - 1].third = Some(pins);
+                return Ok(())
+            }
+            //10프레임 두번째
+            else{
+                println!("{} 프레임 두번째 {}",self.now_frame, pins);
+                if pins + self.frame_list[self.now_frame - 1].first == 10{
+                    self.frame_list[self.now_frame - 1].state = State::Spare;
+                }
+                if pins == 10{
+                    self.frame_list[self.now_frame - 1].state = State::Strike;
+                }
+                self.frame_list[self.now_frame - 1].second = Some(pins);
+                return Ok(())
+            }
+        }
+        // 이외 프레임 시작
+        // 이전 프레임 다친 경우
+        else if self.frame_list[self.now_frame - 1].is_finish() {
+            self.now_frame = self.now_frame + 1;
+            println!("{} 프레임 첫번째 {}",self.now_frame,pins);
+            
+            let mut frame = Frame::new(false);
+            if pins == 10{
+                frame.state = State::Strike;
+            }
+            frame.first = pins;
+            self.frame_list.push(frame);
+            return Ok(())
+        }
+        //한프레임 두번째
+        else {
+            println!("{} 프레임 두번째 {}",self.now_frame, pins);
+            if pins + self.frame_list[self.now_frame - 1].first == 10{
+                self.frame_list[self.now_frame - 1].state = State::Spare;
+            }
+            self.frame_list[self.now_frame - 1].second = Some(pins);
+            return Ok(())
+        }
     }
 
     pub fn score(&self) -> Option<u16> {
-        unimplemented!("Return the score if the game is complete, or None if not.");
+        //10개보다 덜친경우
+        if self.frame_list.len() < 10{
+            println!("10개 안되는 길이");
+            return None
+        }
+        let mut score : u16 = 0;
+        let mut frame_count = 0;
+        for frame in &self.frame_list{
+            if frame.ten{
+                //2번째가 없는경우
+                if frame.second.is_none(){
+                    return None
+                }
+                // 2번째에 스페어나 스트라이크 쳤는데 3번째가 없는경우
+                println!(" {}", frame.second.unwrap() + frame.first == 10);
+                if frame.third.is_none() && (frame.second.unwrap() + frame.first == 10 || frame.second.unwrap() + frame.first == 20) {
+                    return None
+                }
+                println!("10프레임 계산 {}", frame.third.is_none());
+                if frame.third.is_none(){
+                    score = score + frame.first + frame.second.unwrap();
+                }
+                else {
+                    score = score + frame.first + frame.second.unwrap() + frame.third.unwrap();
+                }
+            }
+            else {
+                let mut next_frame = &self.frame_list[frame_count + 1];
+                match frame.state {
+                    State::Open => {
+                        if frame.second.is_none(){
+                            return None
+                        }
+                        score = score + frame.first + frame.second.unwrap();
+                    }
+                    State::Spare => {
+                        score = score + frame.first + frame.second.unwrap() + next_frame.first;
+                    }
+                    State::Strike => {
+                        if next_frame.second.is_none() {
+                            score = score + frame.first + next_frame.first + &self.frame_list[frame_count + 2].first;
+                        }
+                        else{
+                            score = score + frame.first + next_frame.first + next_frame.second.unwrap();
+                        }
+                    }
+                }
+            }
+            frame_count += 1;
+            println!("{}번째 프래임 계산 : {}",frame_count, score);
+        }
+        println!("총 점수 : {}",score);
+        return Some(score);
     }
 }
 
@@ -169,7 +406,6 @@ fn a_strike_earns_ten_points_in_a_frame_with_a_single_roll() {
     for _ in 0..18 {
         let _ = game.roll(0);
     }
-
     assert_eq!(game.score(), Some(10));
 }
 

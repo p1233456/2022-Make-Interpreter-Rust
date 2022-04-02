@@ -8,10 +8,63 @@ pub enum CalculatorInput {
 }
 
 pub fn evaluate(inputs: &[CalculatorInput]) -> Option<i32> {
-    unimplemented!(
-		"Given the inputs: {:?}, evaluate them as though they were a Reverse Polish notation expression",
-		inputs,
-	);
+    let mut vec: Vec<i32> = Vec::new(); 
+    if inputs.len() == 0 {
+        return None
+    }
+    for input in inputs{
+        match input{
+            CalculatorInput::Add => {
+                let num1 =vec.pop();
+                let num2 =vec.pop();
+                if num1 == None || num2 == None {
+                    return None;
+                }
+                
+                let a = num2.unwrap() + num1.unwrap();
+                vec.push(a);
+            }
+            CalculatorInput::Subtract => {
+                let num1 =vec.pop();
+                let num2 =vec.pop();
+                if num1 == None || num2 == None {
+                    return None;
+                }
+                
+                let a = num2.unwrap() - num1.unwrap();
+                vec.push(a);
+            }
+            CalculatorInput::Multiply => {
+                let num1 =vec.pop();
+                let num2 =vec.pop();
+                if num1 == None || num2 == None {
+                    return None;
+                }
+
+                let a = num2.unwrap() * num1.unwrap();
+                vec.push(a);                
+            }
+            CalculatorInput::Divide => {
+                let num1 =vec.pop();
+                let num2 =vec.pop();
+                if num1 == None || num2 == None {
+                    return None;
+                }
+
+                let a = num2.unwrap() / num1.unwrap();
+                vec.push(a);                
+            }
+            CalculatorInput::Value(n) => {
+                vec.push(*n);
+            }
+        }
+    }
+    if vec.len() > 1 {
+        return None;
+    }
+    else {
+        Some(vec[0])
+    }
 }
 
 #[cfg(test)]
