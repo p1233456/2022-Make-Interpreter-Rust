@@ -76,8 +76,6 @@ impl BowlingGame {
     }
 
     pub fn roll(&mut self, pins: u16) -> Result<(), Error> {
-        println!("{}", pins);
-        //let mut current_frame = &self.frame_list[self.now_frame - 1];
         //10 프레임 에러 검출
         if self.now_frame == 10 && self.frame_list[self.now_frame - 1].is_finish(){
             println!("10프레임 다침");
@@ -86,13 +84,11 @@ impl BowlingGame {
         // 비정상적인 입력 검출
         // 10개 넘는 핀 쳤을 경우
         if pins > 10{
-            println!("핀 다침");
             return Err(Error::NotEnoughPinsLeft);
         }
         let mut left_pins : u16 = 10;
         // 1번째 프레임이 아닌 경우
         if self.frame_list.len() != 0{
-            println!("치고 있음");
             //10번째 프레임 첫번째가 아닌 경우
             if  self.frame_list.len() == 10{
                 //첫번째 친거 빼기
@@ -100,7 +96,6 @@ impl BowlingGame {
 
                 //만약 더 없으면 핀 보충
                 if left_pins == 0 {
-                    print!("핀 보충 ");
                     left_pins = 10;
                 }
 
@@ -111,7 +106,6 @@ impl BowlingGame {
 
                 //만약 더 없으면 핀 보충
                 if left_pins == 0 {
-                    print!("핀 보충 ");
                     left_pins = 10;
                 }
                 
@@ -122,7 +116,6 @@ impl BowlingGame {
             }
             // 이외
             else {
-                println!("이외");
                 if  &self.frame_list[self.now_frame - 1].first + pins > 10 && !self.frame_list[self.now_frame - 1].is_finish() {
                     return Err(Error::NotEnoughPinsLeft)
                 }
@@ -132,7 +125,6 @@ impl BowlingGame {
 
         // 첫 프레임
         if self.frame_list.len() == 0{
-            println!("첫 프레임 {}",pins);
             let mut frame = Frame::new(false);
             if pins == 10{
                 frame.state = State::Strike;
@@ -144,7 +136,6 @@ impl BowlingGame {
         // 10프레임 시작
         else if self.frame_list.len() == 9 && self.frame_list[self.now_frame - 1].is_finish() {
             self.now_frame = self.now_frame + 1;
-            println!("{}번째 프레임 첫번째 {}",self.now_frame,pins);
             
             let mut frame = Frame::new(true);
             if pins == 10{
@@ -158,13 +149,11 @@ impl BowlingGame {
         else if self.frame_list.len() == 10 && !self.frame_list[self.now_frame - 1].is_finish(){
             //10프레임 세번째
             if self.frame_list[self.now_frame - 1].second.is_some() {
-                println!("{} 프레임 세번째 {}",self.now_frame, pins);
                 self.frame_list[self.now_frame - 1].third = Some(pins);
                 return Ok(())
             }
             //10프레임 두번째
             else{
-                println!("{} 프레임 두번째 {}",self.now_frame, pins);
                 if pins + self.frame_list[self.now_frame - 1].first == 10{
                     self.frame_list[self.now_frame - 1].state = State::Spare;
                 }
@@ -179,7 +168,6 @@ impl BowlingGame {
         // 이전 프레임 다친 경우
         else if self.frame_list[self.now_frame - 1].is_finish() {
             self.now_frame = self.now_frame + 1;
-            println!("{} 프레임 첫번째 {}",self.now_frame,pins);
             
             let mut frame = Frame::new(false);
             if pins == 10{
@@ -191,7 +179,6 @@ impl BowlingGame {
         }
         //한프레임 두번째
         else {
-            println!("{} 프레임 두번째 {}",self.now_frame, pins);
             if pins + self.frame_list[self.now_frame - 1].first == 10{
                 self.frame_list[self.now_frame - 1].state = State::Spare;
             }
@@ -203,7 +190,6 @@ impl BowlingGame {
     pub fn score(&self) -> Option<u16> {
         //10개보다 덜친경우
         if self.frame_list.len() < 10{
-            println!("10개 안되는 길이");
             return None
         }
         let mut score : u16 = 0;
@@ -215,11 +201,9 @@ impl BowlingGame {
                     return None
                 }
                 // 2번째에 스페어나 스트라이크 쳤는데 3번째가 없는경우
-                println!(" {}", frame.second.unwrap() + frame.first == 10);
                 if frame.third.is_none() && (frame.second.unwrap() + frame.first == 10 || frame.second.unwrap() + frame.first == 20) {
                     return None
                 }
-                println!("10프레임 계산 {}", frame.third.is_none());
                 if frame.third.is_none(){
                     score = score + frame.first + frame.second.unwrap();
                 }
@@ -228,7 +212,7 @@ impl BowlingGame {
                 }
             }
             else {
-                let mut next_frame = &self.frame_list[frame_count + 1];
+                let next_frame = &self.frame_list[frame_count + 1];
                 match frame.state {
                     State::Open => {
                         if frame.second.is_none(){
@@ -250,9 +234,7 @@ impl BowlingGame {
                 }
             }
             frame_count += 1;
-            println!("{}번째 프래임 계산 : {}",frame_count, score);
         }
-        println!("총 점수 : {}",score);
         return Some(score);
     }
 }
