@@ -2,7 +2,51 @@ use std::collections::HashMap;
 
 /// Count occurrences of words.
 pub fn word_count(words: &str) -> HashMap<String, u32> {
-    unimplemented!("Count of occurrences of words in {:?}", words);
+    let mut smallStr = &words.to_string().to_lowercase().replace(" '", " ").replace("' ", " ");
+    let mut hashMap: HashMap<String, u32> = HashMap::new();
+    let mut strTemp:String = String::new();
+    let mut rightStr:String = String::new();
+    for i in (&smallStr).chars(){
+        if (i.is_ascii_alphanumeric() || i.is_ascii_digit() || i == '\'' || i == ' ' || i == '\n' || i == '\t' || i == ',') {
+            rightStr = rightStr + &i.to_string();
+        }
+    }
+
+    println!("{}",&rightStr);
+    for i in (&rightStr).chars(){
+        //공백 문자이거나 \n일 경우
+        if i == ' ' || i == '\n' || i == ','{
+            if strTemp == "" {
+                continue;
+            }
+            let value = hashMap.get(&strTemp);
+            //println!("{}",&strTemp);
+            //println!("");
+            if value.is_none(){
+                hashMap.insert(strTemp, 1);
+            }
+            else{
+                hashMap.insert(strTemp, *(value.unwrap()) + 1);
+            }
+            strTemp = String::new();
+        }
+        else {
+            strTemp = strTemp + &i.to_string();
+        }
+    }
+    //아직 템프에 남아있는 경우
+    if strTemp.len() != 0 {
+        println!("아직 템프에 남음");
+        let value = hashMap.get(&strTemp);
+        println!("{}",&strTemp);
+        if value.is_none() {
+            hashMap.insert(strTemp, 1);
+        }
+        else{
+            hashMap.insert(strTemp, *(value.unwrap()) + 1);
+        }
+    }
+    return hashMap;
 }
 
 #[cfg(test)]

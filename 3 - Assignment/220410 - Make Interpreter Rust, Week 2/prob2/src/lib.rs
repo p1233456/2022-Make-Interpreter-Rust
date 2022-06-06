@@ -3,11 +3,10 @@ use std::marker::PhantomData;
 use std::rc::Rc;
 
 pub struct CircularBuffer<T> {
-    // This field is here to make the template compile and not to
-    // complain about unused type parameter 'T'. Once you start
-    // solving the exercise, delete this field and the 'std::marker::PhantomData'
-    // import.
-    field: PhantomData<T>,
+    field: Vec<Option<T>>,
+    front: usize,
+    end: usize,
+    size: usize,
 }
 
 #[derive(Debug, PartialEq)]
@@ -18,21 +17,37 @@ pub enum Error {
 
 impl<T> CircularBuffer<T> {
     pub fn new(capacity: usize) -> Self {
-        unimplemented!(
-            "Construct a new CircularBuffer with the capacity to hold {}.",
-            match capacity {
-                1 => "1 element".to_string(),
-                _ => format!("{} elements", capacity),
-            }
-        );
+        CircularBuffer {
+            field: Vec::new(),
+            front: 0,
+            end:0,
+            size: capacity,
+        }
     }
 
     pub fn write(&mut self, _element: T) -> Result<(), Error> {
-        unimplemented!("Write the passed element to the CircularBuffer or return FullBuffer error if CircularBuffer is full.");
+        if self.field[self.end].is_none() {
+            self.field[self.end] = Some(_element);
+            if self.end + 1 == self.size{
+                self.end = 0;
+            }
+            else {
+                self.end == self.end + 1;
+            }
+            Ok(())
+        }
+        else {
+            Err(Error::FullBuffer)
+        }
     }
 
     pub fn read(&mut self) -> Result<T, Error> {
-        unimplemented!("Read the oldest element from the CircularBuffer or return EmptyBuffer error if CircularBuffer is empty.");
+        if self.field[self.front].is_none() {
+            Err(Error::EmptyBuffer)
+        }
+        else {
+            Ok(self.field[self.front].unwrap())//value.unwrap())
+        }
     }
 
     pub fn clear(&mut self) {

@@ -3,7 +3,8 @@ use std::iter::FromIterator;
 pub struct SimpleLinkedList<T> {
     // Delete this field
     // dummy is needed to avoid unused parameter error during compilation
-    dummy: ::std::marker::PhantomData<T>,
+    dummy: ::std::marker::PhantomData<T>
+    
 }
 
 impl<T> SimpleLinkedList<T> {
