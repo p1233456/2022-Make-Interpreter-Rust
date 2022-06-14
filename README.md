@@ -26,27 +26,31 @@
 - Week 1 (3/27) [[Lecture]](./1%20-%20Lecture/220327%20-%20Make%20Interpreter%20Rust%2C%20Week%201.pdf) [[Assignment]](./3%20-%20Assignment/220327%20-%20Make%20Interpreter%20Rust%2C%20Week%201) [[Solution]](./4%20-%20Solution/220327%20-%20Make%20Interpreter%20Rust%2C%20Week%201)
   - A Tour of Rust, Part 1
   - Assignment #1
-- Week 2 (4/10) [[Lecture]](./1%20-%20Lecture/220410%20-%20Make%20Interpreter%20Rust%2C%20Week%202.pdf) [[Assignment]](./3%20-%20Assignment/220410%20-%20Make%20Interpreter%20Rust%2C%20Week%202)
+- Week 2 (4/10) [[Lecture]](./1%20-%20Lecture/220410%20-%20Make%20Interpreter%20Rust%2C%20Week%202.pdf) [[Assignment]](./3%20-%20Assignment/220410%20-%20Make%20Interpreter%20Rust%2C%20Week%202) [[Solution]](./4%20-%20Solution/220410%20-%20Make%20Interpreter%20Rust%2C%20Week%202)
   - A Tour of Rust, Part 2
   - Assignment #2
-- Week 3 (4/24)
-  - Lexing
+- Week 3 (5/22) [[Code]](./2%20-%20Code/220522%20-%20Make%20Interpreter%20Rust%2C%20Week%203)
+  - Lexing, Part 1
     - Lexical Analysis
     - Defining Tokens
-    - The Lexer
+    - The Lexer, Part 1
+    - First REPL
+- Week 4 (6/5) [[Code]](./2%20-%20Code/220605%20-%20Make%20Interpreter%20Rust%2C%20Week%204) [[Assignment]](./3%20-%20Assignment/220605%20-%20Make%20Interpreter%20Rust%2C%20Week%204)
+  - Lexing, Part 2
+    - The Lexer, Part 2
     - Extensions
   - Assignment #3
-- Week 4 (5/8)
+- Week 5 (6/19)
   - Parsing
     - Parsers
     - Statements
-  - Assignment #4    
-- Week 5 (5/22)
+  - Assignment #4
+- Week 6 (TBA)
   - Parsing
     - Expressions
     - Read-Parse-Print-Loop
   - Assignment #5
-- Week 6 (6/5)
+- Week 7 (TBA)
   - Evaluation
     - Giving Meaning to Symbols
     - Strategies of Evaluation
@@ -54,7 +58,7 @@
     - Representing Objects
     - Evaluating Expressions
   - Assignment #6
-- Week 7 (6/19)  
+- Week 8 (TBA)
   - Evaluation
     - Conditionals
     - Return Statements
@@ -62,13 +66,13 @@
     - Bindings & The Environment
     - Functions & Function Calls
   - Assignment #7
-- Week 8 (7/3)
+- Week 9 (TBA)
   - Extensions
     - Data Types & Functions
     - Strings
     - Built-in Functions
   - Assignment #8
-- Week 9 (7/17)
+- Week 10 (TBA)
   - Extensions  
     - Array
     - Hashes
